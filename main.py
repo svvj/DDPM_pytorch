@@ -15,7 +15,7 @@ from utils import show_images
 from Simple_UNet import SimpleUnet
 
 IMG_SIZE = 64
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 
 
 def load_transformed_dataset():
@@ -138,6 +138,8 @@ if __name__ == "__main__":
         kaggle.api.dataset_download_files('rickyyyyyyy/torchvision-stanford-cars', path='./data', unzip=True)
 
     data = load_transformed_dataset()
+    # use half of the data
+    data = torch.utils.data.Subset(data, range(len(data) // 2))
     dataloader = DataLoader(data, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
     # show_images(data)
     # plt.show()
@@ -192,3 +194,8 @@ if __name__ == "__main__":
             if epoch % 5 == 0 and step == 0:
                 print(f"Epoch {epoch}, Step {step}, Loss {loss.item()}")
                 sample_plot_image()
+
+
+    # Save model
+    torch.save(model.state_dict(), "model.pth")
+    print("Model saved")
